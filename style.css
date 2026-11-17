@@ -1,0 +1,1179 @@
+/**
+ * 外国人向けダイバーシティ安心マップWebアプリ - スタイルシート
+ * テーマ: 温泉と多文化共生（エメラルドグリーン × 温泉オレンジ）
+ * 特徴: グラスモーフィズム、スムーズなボトムシートアニメーション、完全レスポンシブ
+ */
+
+/* ==========================================================================
+   1. デザインシステム変数 (CSS Variables)
+   ========================================================================== */
+:root {
+  /* メインカラーパレット */
+  --color-primary: #0d9488;         /* エメラルドグリーン（安心・調和・温泉） */
+  --color-primary-light: #14b8a6;   /* ライトエメラルド */
+  --color-primary-dark: #0f766e;    /* ダークエメラルド */
+  --color-accent: #f97316;          /* 温泉オレンジ（温もり・活力） */
+  --color-accent-light: #fb923c;    /* ライトオレンジ */
+
+  /* ダークモード背景グラデーション */
+  --bg-deep: #090d16;               /* 最深部背景色 */
+  --bg-main: #0f172a;               /* メイン背景色 */
+  --bg-surface: #1e293b;            /* カード・パネル表面色 */
+  --bg-surface-glass: rgba(30, 41, 59, 0.75); /* グラスモーフィズム半透明 */
+  --bg-header-glass: rgba(15, 23, 42, 0.82);
+
+  /* テキストカラー */
+  --text-main: #f8fafc;             /* 主要テキスト */
+  --text-muted: #94a3b8;            /* 補足・薄めテキスト */
+  --text-subtle: #64748b;           /* 極薄テキスト */
+
+  /* ボーダー・境界線 */
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(20, 184, 166, 0.5);
+
+  /* 食の配慮・ステータスカラー */
+  --badge-halal: #10b981;           /* ハラール（エメラルド） */
+  --badge-vegan: #22c55e;           /* ヴィーガン（フレッシュグリーン） */
+  --badge-vege: #84cc16;            /* ベジタリアン（ライムグリーン） */
+  --badge-porkfree: #ec4899;        /* 豚肉不使用（ピンク） */
+  --badge-prayer: #6366f1;          /* 礼拝室（インディゴ） */
+
+  /* シャドウ */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-sheet: 0 -10px 40px rgba(0, 0, 0, 0.6);
+
+  /* トランジション */
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.25s ease;
+
+  /* フォントスタック */
+  --font-base: 'Outfit', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ==========================================================================
+   2. リセット＆ベーススタイル
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-base);
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* アプリ全体レイアウト */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   3. ヘッダー＆コントロールパネル（グラスモーフィズム）
+   ========================================================================== */
+.app-header {
+  position: relative;
+  z-index: 1000;
+  background: var(--bg-header-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-md);
+  padding: 12px 20px 10px;
+  flex-shrink: 0;
+}
+
+.header-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+/* ブランドロゴ＆タイトル */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4);
+  flex-shrink: 0;
+}
+
+.brand-text h1 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  background: linear-gradient(90deg, #ffffff, #99f6e4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-text .subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 1px;
+}
+
+/* 多言語切り替えボタン */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-base);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.lang-btn:hover {
+  color: #fff;
+}
+
+.lang-btn.active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.4);
+}
+
+/* 検索＆フィルターコントロール */
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 検索窓 */
+.search-box {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--color-primary-light);
+  font-size: 0.95rem;
+  pointer-events: none;
+}
+
+.search-box input {
+  width: 100%;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  padding: 9px 38px 9px 38px;
+  color: var(--text-main);
+  font-family: var(--font-base);
+  font-size: 0.88rem;
+  outline: none;
+  transition: all var(--transition-normal);
+}
+
+.search-box input:focus {
+  border-color: var(--color-primary);
+  background: rgba(30, 41, 59, 0.95);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25);
+}
+
+.search-box input::placeholder {
+  color: var(--text-subtle);
+}
+
+.clear-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px;
+}
+
+.clear-btn:hover {
+  color: #fff;
+}
+
+/* フィルタータグスクロールバー */
+.filter-scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 2px;
+}
+
+.filter-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-tags {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.filter-btn {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid var(--border-glass);
+  color: var(--text-muted);
+  font-family: var(--font-base);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.filter-btn:hover {
+  background: rgba(51, 65, 85, 0.8);
+  color: var(--text-main);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.filter-btn.active {
+  background: linear-gradient(135deg, var(--color-primary), #047857);
+  color: #ffffff;
+  border-color: transparent;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.35);
+}
+
+/* ==========================================================================
+   4. メインレイアウト（サイドバーリスト ＋ 地図エリア）
+   ========================================================================== */
+.main-layout {
+  display: flex;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* サイドバー（店舗リスト） */
+.sidebar-container {
+  width: 400px;
+  background: var(--bg-main);
+  border-right: 1px solid var(--border-glass);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.results-header {
+  padding: 12px 18px;
+  background: rgba(15, 23, 42, 0.5);
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.results-count {
+  font-size: 0.82rem;
+  color: var(--color-primary-light);
+  font-weight: 600;
+}
+
+.spots-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.spots-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.spots-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+/* 店舗カード */
+.spot-card {
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.spot-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(20, 184, 166, 0.4);
+  box-shadow: var(--shadow-md), 0 0 15px rgba(13, 148, 136, 0.2);
+}
+
+.spot-card.selected {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent), var(--shadow-md);
+}
+
+.spot-card-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  overflow: hidden;
+  background: #111;
+}
+
+.spot-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.spot-card:hover .spot-card-img {
+  transform: scale(1.05);
+}
+
+.spot-card-category {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.spot-card-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spot-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.35;
+}
+
+.spot-card-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* カード内ピクトグラムバッジ群 */
+.spot-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.badge-pill {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+}
+
+.badge-pill.halal {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.badge-pill.vegan {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.badge-pill.vege {
+  background: rgba(132, 204, 22, 0.15);
+  color: #a3e635;
+  border-color: rgba(132, 204, 22, 0.3);
+}
+
+.badge-pill.porkfree {
+  background: rgba(236, 72, 153, 0.15);
+  color: #f472b6;
+  border-color: rgba(236, 72, 153, 0.3);
+}
+
+.badge-pill.prayer {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.badge-pill.non-dietary {
+  background: rgba(100, 116, 139, 0.2);
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.badge-pill.cash-only {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.4);
+  font-weight: 700;
+}
+
+.card-payment-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border-glass);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.card-payment-summary.cash-only-summary {
+  color: #fbbf24;
+  font-weight: 600;
+}
+  color: var(--text-muted);
+}
+
+.card-payment-summary i {
+  color: var(--color-accent);
+}
+
+/* 検索結果ゼロ */
+.no-results-msg {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+
+.no-results-msg i {
+  font-size: 2.2rem;
+  color: var(--text-subtle);
+  margin-bottom: 12px;
+}
+
+/* 地図コンテナ */
+.map-container {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  background: #19202c;
+}
+
+.map-view {
+  width: 100%;
+  height: 100%;
+}
+
+/* 地図再センタリングボタン */
+.map-control-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 800;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  color: var(--text-main);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-normal);
+}
+
+.map-control-btn:hover {
+  background: var(--color-primary);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+/* Leaflet 地図ダーク調タイルのフィルター調整（上品な温泉ダークテーマ） */
+.leaflet-tile {
+  filter: brightness(0.85) invert(1) contrast(1.1) hue-rotate(185deg) saturate(0.65);
+}
+
+/* カスタムLeafletピンマーカー */
+.custom-pin {
+  width: 40px;
+  height: 48px;
+  position: relative;
+  cursor: pointer;
+}
+
+.custom-pin-inner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.custom-pin-inner i {
+  transform: rotate(45deg);
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.custom-pin:hover .custom-pin-inner,
+.custom-pin.selected .custom-pin-inner {
+  transform: rotate(-45deg) scale(1.2);
+  background: linear-gradient(135deg, var(--color-accent), #ea580c);
+  border-color: #ffd700;
+}
+
+.custom-pin-pulse {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+}
+
+/* ==========================================================================
+   5. 店舗詳細ボトムシートモーダル（最重要UIコンポーネント）
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ボトムシート基本設計 */
+.bottom-sheet {
+  position: fixed;
+  z-index: 1600;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 85vh;
+  max-height: 850px;
+  background: #111827;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px 24px 0 0;
+  box-shadow: var(--shadow-sheet);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(105%);
+  transition: transform 0.4s var(--ease-smooth);
+  overflow: hidden;
+}
+
+.bottom-sheet.open {
+  transform: translateY(0);
+}
+
+/* ドラッグハンドルバー（モバイル用） */
+.sheet-drag-handle-wrapper {
+  width: 100%;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: grab;
+  background: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.sheet-drag-handle {
+  width: 44px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 閉じるボタン */
+.sheet-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 20;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-glass);
+  color: #fff;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sheet-close-btn:hover {
+  background: rgba(239, 68, 68, 0.8);
+  transform: scale(1.1);
+}
+
+/* ボトムシート内部スクロール */
+.sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ヒーロー画像エリア */
+.sheet-hero {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  background: #000;
+}
+
+.detail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sheet-hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(17, 24, 39, 0.95) 100%);
+}
+
+.sheet-hero-badge {
+  position: absolute;
+  bottom: 14px;
+  left: 20px;
+  z-index: 2;
+}
+
+.category-badge {
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.4);
+}
+
+/* ボトムシート本文 */
+.sheet-body {
+  padding: 20px 24px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.sheet-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.quick-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* 各セクション */
+.sheet-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.sheet-section.description-section {
+  border-bottom: none;
+  padding-bottom: 4px;
+}
+
+.detail-description {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+}
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title i {
+  color: var(--color-accent);
+}
+
+/* 食の配慮ピクトグラムグリッド */
+.pictogram-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.picto-item {
+  background: rgba(30, 41, 59, 0.75);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.picto-item.active {
+  background: rgba(13, 148, 136, 0.15);
+  border-color: rgba(20, 184, 166, 0.4);
+}
+
+.picto-item.inactive {
+  background: rgba(30, 41, 59, 0.4);
+  border-color: rgba(255, 255, 255, 0.05);
+  opacity: 0.75;
+}
+
+.picto-icon {
+  font-size: 1.3rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.picto-item.active .picto-icon {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.picto-item.inactive .picto-icon {
+  background: rgba(255, 255, 255, 0.04);
+  color: #64748b;
+}
+
+.picto-text-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.picto-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.picto-status-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.picto-status-pill.status-ok {
+  color: #34d399;
+}
+
+.picto-status-pill.status-ng {
+  color: #94a3b8;
+}
+
+/* 使えるお支払い方法セクション（強化部分） */
+.payment-section {
+  background: rgba(30, 41, 59, 0.4);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid var(--border-glass);
+}
+
+.cash-only-banner {
+  width: 100%;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.payment-types-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pay-type-badge {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #e2e8f0;
+}
+
+.pay-type-badge i {
+  color: var(--color-accent);
+}
+
+.brand-tags-title {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.payment-brands-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.payment-brand-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.payment-brand-badge:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.payment-brand-badge i {
+  font-size: 1rem;
+  color: #38bdf8;
+}
+
+/* 言語・サービスグリッド */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.service-item {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid var(--border-glass);
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #e2e8f0;
+}
+
+.service-item i {
+  color: var(--color-primary-light);
+  font-size: 1rem;
+}
+
+/* 基本情報リスト */
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.info-icon {
+  color: var(--color-accent);
+  font-size: 1rem;
+  margin-top: 3px;
+  width: 18px;
+  text-align: center;
+}
+
+.info-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.info-value {
+  font-size: 0.88rem;
+  color: #f8fafc;
+}
+
+.info-value.link {
+  color: var(--color-primary-light);
+  text-decoration: none;
+}
+
+.info-value.link:hover {
+  text-decoration: underline;
+}
+
+/* Google Mapsルート案内ボタン */
+.sheet-actions {
+  margin-top: 8px;
+}
+
+.route-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--color-accent), #ea580c);
+  color: #ffffff;
+  font-size: 0.98rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.4);
+  transition: all 0.25s ease;
+}
+
+.route-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.6);
+  filter: brightness(1.08);
+}
+
+.route-action-btn i {
+  font-size: 1.2rem;
+}
+
+/* ==========================================================================
+   6. レスポンシブ設計（PC/タブレット/スマートフォン）
+   ========================================================================== */
+
+/* PC画面（769px以上）: ボトムシートを右側の洗練されたフローティングモーダルパネルに変形 */
+@media (min-width: 769px) {
+  .bottom-sheet {
+    bottom: 24px;
+    right: 24px;
+    left: auto;
+    width: 480px;
+    height: calc(100vh - 140px);
+    max-height: 820px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 0, 0, 0.8);
+    transform: translateX(110%);
+    transition: transform 0.45s var(--ease-smooth);
+  }
+
+  .bottom-sheet.open {
+    transform: translateX(0);
+  }
+
+  .sheet-drag-handle-wrapper {
+    display: none;
+  }
+}
+
+/* タブレット・スマホ画面（768px以下） */
+@media (max-width: 768px) {
+  .header-main {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .lang-switcher {
+    justify-content: center;
+    align-self: center;
+  }
+
+  .main-layout {
+    flex-direction: column-reverse;
+  }
+
+  .sidebar-container {
+    width: 100%;
+    height: 180px;
+    border-right: none;
+    border-top: 1px solid var(--border-glass);
+  }
+
+  .spots-list {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .spot-card {
+    min-width: 260px;
+    max-width: 260px;
+    height: 100%;
+    flex-shrink: 0;
+  }
+
+  .spot-card-img-wrap {
+    height: 75px;
+  }
+
+  .spot-card-body {
+    padding: 8px 10px;
+    gap: 4px;
+  }
+
+  .spot-card-title {
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .spot-card-desc {
+    display: none;
+  }
+
+  .map-container {
+    flex: 1;
+    height: auto;
+  }
+
+  .bottom-sheet {
+    height: 85vh;
+  }
+}

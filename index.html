@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Unimap | 別府安心マップ</title>
+  <meta name="description" content="大分県別府市の外国人向け安心マップ。ベジタリアン・ヴィーガン・ハラール・豚肉不使用対応、クレジットカードやQR決済などの支払い方法、多言語サポートの情報をわかりやすく案内します。">
+
+  <!-- Google Fonts: Outfit & Noto Sans JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 (アイコンフォント) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Leaflet.js 地図ライブラリ CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <!-- カスタムスタイルシート -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- アプリケーション全体コンテナ -->
+  <div id="app" class="app-container">
+    
+    <!-- ヘッダー（グラスモーフィズムデザイン） -->
+    <header class="app-header">
+      <div class="header-main">
+        <div class="brand">
+          <div class="brand-icon">
+            <i class="fa-solid fa-spa"></i>
+          </div>
+          <div class="brand-text">
+            <h1 id="app-title">Unimap</h1>
+            <p id="app-subtitle" class="subtitle">食の配慮・キャッシュレス・多言語でつながる別府ガイド</p>
+          </div>
+        </div>
+
+        <!-- 多言語切替ボタングループ -->
+        <div class="lang-switcher" role="group" aria-label="Language Selector">
+          <button type="button" class="lang-btn active" data-lang="ja" aria-pressed="true">日本語</button>
+          <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+          <button type="button" class="lang-btn" data-lang="zh" aria-pressed="false">中文</button>
+          <button type="button" class="lang-btn" data-lang="ko" aria-pressed="false">한국어</button>
+        </div>
+      </div>
+
+      <!-- 検索・フィルターコントロールエリア -->
+      <div class="control-panel">
+        <!-- 検索入力バー -->
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="search-input" placeholder="店舗名、料理名、キーワードで検索..." autocomplete="off">
+          <button type="button" id="clear-search-btn" class="clear-btn" aria-label="Clear Search" style="display: none;">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- 絞り込みフィルタータグ一覧 -->
+        <div class="filter-scroll-container">
+          <div class="filter-tags" id="filter-tags">
+            <button type="button" class="filter-btn active" data-filter="all">すべて</button>
+            <button type="button" class="filter-btn" data-filter="vegetarian">🥗 ベジタリアン</button>
+            <button type="button" class="filter-btn" data-filter="vegan">🌿 ヴィーガン</button>
+            <button type="button" class="filter-btn" data-filter="halal">🕌 ハラール対応</button>
+            <button type="button" class="filter-btn" data-filter="pork_free">🥩 豚肉不使用</button>
+            <button type="button" class="filter-btn" data-filter="prayer_room">🕋 礼拝室あり</button>
+            <button type="button" class="filter-btn" data-filter="credit_card">💳 カード決済可</button>
+            <button type="button" class="filter-btn" data-filter="qr_pay">📱 QR・電子マネー</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- メインコンテンツ（サイドバー＋Leaflet地図） -->
+    <main class="main-layout">
+      
+      <!-- サイドバー（店舗リスト一覧） -->
+      <aside class="sidebar-container" id="sidebar">
+        <div class="results-header">
+          <span id="results-count" class="results-count">安心スポットを読み込み中...</span>
+        </div>
+        <div class="spots-list" id="spots-list">
+          <!-- JavaScriptによって店舗カードが動的に生成されます -->
+        </div>
+      </aside>
+
+      <!-- 地図描画エリア -->
+      <div class="map-container">
+        <div id="map" class="map-view"></div>
+        <!-- 地図再センタリングボタン -->
+        <button type="button" id="recenter-btn" class="map-control-btn" title="別府市中心に戻る" aria-label="Reset Map View">
+          <i class="fa-solid fa-location-crosshairs"></i>
+        </button>
+      </div>
+
+    </main>
+
+    <!-- モーダル背景オーバーレイ -->
+    <div id="modal-overlay" class="modal-overlay"></div>
+
+    <!-- 店舗詳細ボトムシートモーダル（最重要UI） -->
+    <section id="bottom-sheet" class="bottom-sheet" aria-modal="true" role="dialog" aria-hidden="true">
+      
+      <!-- ドラッグハンドル（スマホ用インジケーター） -->
+      <div class="sheet-drag-handle-wrapper" id="sheet-drag-handle">
+        <div class="sheet-drag-handle"></div>
+      </div>
+
+      <!-- 閉じるボタン -->
+      <button type="button" id="close-sheet-btn" class="sheet-close-btn" aria-label="Close detail modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- ボトムシート内部コンテンツスクロールエリア -->
+      <div class="sheet-content" id="sheet-content">
+        
+        <!-- 店舗ヒーロー画像 -->
+        <div class="sheet-hero">
+          <img id="detail-image" src="" alt="店舗外観・料理写真" class="detail-img">
+          <div class="sheet-hero-gradient"></div>
+          <div class="sheet-hero-badge">
+            <span id="detail-category" class="category-badge"></span>
+          </div>
+        </div>
+
+        <!-- 店舗名と概要 -->
+        <div class="sheet-body">
+          <div class="sheet-title-group">
+            <h2 id="detail-name" class="detail-title"></h2>
+            <div id="detail-quick-tags" class="quick-tags-container"></div>
+          </div>
+
+          <!-- 店舗詳細説明文 -->
+          <div class="sheet-section description-section">
+            <p id="detail-description" class="detail-description"></p>
+          </div>
+
+          <!-- 食の配慮・施設ピクトグラムセクション -->
+          <div class="sheet-section">
+            <h3 id="section-dietary-title" class="section-title">
+              <i class="fa-solid fa-utensils"></i> 食の配慮・設備
+            </h3>
+            <div id="detail-dietary-badges" class="pictogram-grid"></div>
+          </div>
+
+          <!-- 使えるお支払い方法セクション（ご要望により充実） -->
+          <div class="sheet-section payment-section">
+            <h3 id="section-payments-title" class="section-title">
+              <i class="fa-solid fa-credit-card"></i> 使えるお支払い方法
+            </h3>
+            <div id="detail-payment-types" class="payment-types-bar"></div>
+            <div class="brand-tags-title">
+              <i class="fa-solid fa-circle-check"></i> 対応決済ブランド・サービス
+            </div>
+            <div id="detail-payment-brands" class="payment-brands-container"></div>
+          </div>
+
+          <!-- 言語・サービス設備セクション -->
+          <div class="sheet-section">
+            <h3 id="section-services-title" class="section-title">
+              <i class="fa-solid fa-globe"></i> 言語・サービス
+            </h3>
+            <div id="detail-services-badges" class="services-grid"></div>
+          </div>
+
+          <!-- 基本情報（住所・営業時間・電話番号） -->
+          <div class="sheet-section info-section">
+            <h3 id="section-info-title" class="section-title">
+              <i class="fa-solid fa-circle-info"></i> 基本情報
+            </h3>
+            <div class="info-list">
+              <div class="info-item">
+                <i class="fa-solid fa-map-pin info-icon"></i>
+                <div class="info-text">
+                  <span id="label-address" class="info-label">住所</span>
+                  <span id="detail-address" class="info-value"></span>
+                </div>
+              </div>
+              <div class="info-item">
+                <i class="fa-solid fa-clock info-icon"></i>
+                <div class="info-text">
+                  <span id="label-hours" class="info-label">営業時間</span>
+                  <span id="detail-hours" class="info-value"></span>
+                </div>
+              </div>
+              <div class="info-item">
+                <i class="fa-solid fa-phone info-icon"></i>
+                <div class="info-text">
+                  <span id="label-phone" class="info-label">電話番号</span>
+                  <a id="detail-phone-link" href="" class="info-value link"><span id="detail-phone"></span></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Google Mapsルート案内ボタン -->
+          <div class="sheet-actions">
+            <a id="detail-route-btn" href="#" target="_blank" rel="noopener noreferrer" class="route-action-btn">
+              <i class="fa-solid fa-diamond-turn-right"></i>
+              <span id="btn-route-text">Google Maps でルート案内</span>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Leaflet.js 地図ライブラリ スクリプト -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- アプリケーションデータ -->
+  <script src="data.js"></script>
+  <!-- メインロジック -->
+  <script src="app.js"></script>
+</body>
+</html>
